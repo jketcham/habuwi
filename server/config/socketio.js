@@ -18,6 +18,8 @@ function onConnect(socket) {
   });
 
   // Insert sockets below
+  require('../api/hackathon/hackathon.socket').register(socket);
+  require('../api/team/team.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
 }
 
