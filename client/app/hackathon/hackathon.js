@@ -18,6 +18,11 @@ angular.module('habuwiApp')
           }
         }
       })
+      .state('hackathons.page.join', {
+        url: '/join',
+        templateUrl: 'app/hackathon/views/join.html',
+        authenticate: true
+      })
       .state('hackathons.page.teams', {
         url: '/teams',
         templateUrl: 'app/hackathon/views/teams.html'

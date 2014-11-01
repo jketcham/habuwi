@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('habuwiApp')
-.directive('buttonParticipantHack', ['', function() {
+.directive('buttonParticipantHack', ['Hackathons', function(Hackathons) {
   return {
     restrict: 'A',
     scope: {
@@ -16,14 +16,6 @@ angular.module('habuwiApp')
       scope.btn.icon = 'glyphicon-plus'
       scope.btn.text = 'Join game';
       scope.inGame = false;
-
-      Games.checkPlayer(game._id, user._id).then(function(res) {
-        if(res && !res.error) {
-          scope.btn.text = 'In game';
-          scope.btn.icon = 'glyphicon-ok';
-          scope.inGame = true;
-        }
-      });
 
       return element.bind({
         mouseenter: function() {
@@ -71,6 +63,58 @@ angular.module('habuwiApp')
                 toaster.pop('error', 'Oops! There was an issue', res.error.message);
               }
             });
+          }
+        }
+      });
+    }
+  }
+}]);
+
+angular.module('habuwiApp')
+.directive('buttonHackathonParticipate', ['Hackathons', 'User', '$state', function(Hackathons, User, $state) {
+  return {
+    restrict: 'A',
+    scope: {
+      user: '=',
+      hackathon: '='
+    },
+    template: '<button class="btn {{hackathon.btn.class}}" role="button">{{hackathon.btn.text}}</button>',
+    link: function(scope, element, attr) {
+      var hackathon = scope.hackathon,
+          user = scope.user;
+      scope.hackathon.btn = {};
+      scope.hackathon.btn.class = 'btn-default';
+      scope.hackathon.btn.text = 'Participate';
+      scope.hackathon.participating = false;
+
+      return element.bind({
+        mouseenter: function() {
+          if(scope.hackathon.participating) {
+            scope.$apply(function() {
+              scope.hackathon.btn.class = 'btn-danger';
+              scope.hackathon.btn.text = 'Leave';
+            });
+          }
+        },
+        mouseleave: function() {
+          if(scope.hackathon.participating) {
+            scope.$apply(function() {
+              scope.hackathon.btn.class = 'btn-success';
+              scope.hackathon.btn.text = 'Participating';
+            });
+          }
+        },
+        click: function() {
+          if(scope.hackathon.participating) {
+            Hackathons.removeParticipant(hackathon._id, user).then(function(res) {
+              if(res && !res.error) {
+                scope.participating = false;
+                scope.hackathon.btn.class = 'btn-success';
+                scope.hackathon.btn.text = 'Participate';
+              }
+            });
+          } else {
+            $state.go('hackathons.page.join', { id: hackathon._id });
           }
         }
       });
