@@ -133,7 +133,7 @@ exports.getTeams = function(req, res) {
     .populate('teams')
     .exec(function(err, hackathon) {
       // handle errors
-      return res.json(200, teams);
+      return res.json(200, hackathon.teams);
     })
 };
 
