@@ -26,10 +26,10 @@ exports.search = function(req, res) {
 
 // Get a single hackathon
 exports.show = function(req, res) {
-  Hackathon.findById(req.params.id, function (err, hackathon) {
+  Hackathon.findById(req.params.id, '-participants -teams', function (err, hackathon) {
     if(err) { return handleError(res, err); }
     if(!hackathon) { return res.send(404); }
-    return res.json(hackathon);
+    return res.json(200, hackathon);
   });
 };
 
@@ -75,9 +75,11 @@ exports.removeParticipant = function(req, res) {
 exports.getParticipants = function(req, res) {
   Hackathon.findById(req.params.id, 'participants')
     .exec(function(err, hackathon) {
+      console.log(hackathon);
       // handle errors
       async.each(hackathon.participants, function(participant, callback) {
-        User.populate(participant, [{ path: 'user' }, { path: 'team'}], function(err, user) {
+        console.log(participant);
+        User.populate(participant, [{ path: 'user' }], function(err, user) {
           if (err) { return handleError(res, err); }
 
           callback();

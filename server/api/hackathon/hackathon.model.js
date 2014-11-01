@@ -7,6 +7,8 @@ var HackathonSchema = new Schema({
   name: String,
   info: String,
   url: String,
+  date: Date,
+  header_image_key: String,
   teams: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
   participants: [{
     user: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -16,7 +18,6 @@ var HackathonSchema = new Schema({
     }],
     team: { type: Schema.Types.ObjectId, ref: 'Team' }
   }],
-  date: Date,
   created_on: { type: Date, default: Date.now }
 });
 
