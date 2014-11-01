@@ -18,8 +18,26 @@
   max-width: 1000px;
 }
 
+header {
+  h1, h2, h3,
+  h4, h5, h6 {
+    margin-top: 0;
+  }
+}
+
+:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+.btn:focus {
+  outline-color: transparent;
+  outline-style: none;
+  outline: none;
+}
+
 // injector
 @import 'account/login/login.less';
+@import 'account/profile/profile.less';
 @import 'admin/admin.less';
 @import 'hackathon/hackathon.less';
 @import 'main/main.less';

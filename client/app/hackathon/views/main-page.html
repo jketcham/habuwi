@@ -2,7 +2,11 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <h1 class="title">{{ ::hackathon.name }}</h1><span class="verified" ng-show="hackathon.verified">Verified</span>
+        <h1 class="title">{{ ::hackathon.name }}</h1>
+        <ul class="list-inline list-hackathon-header">
+          <li><span class="verified" ng-show="hackathon.verified">Verified</span></li>
+          <li><div button-hackathon-participate user="currentUser" hackathon="hackathon"></div></li>
+        </ul>
         <p>{{ ::hackathon.info }}</p>
       </div>
       <div class="col-md-4 col-md-offset-2">
@@ -21,20 +25,22 @@
             <p>You need to log in</p>
           </div>
         </div>
-        <ul class="list-inline">
-          <li><a ng-href="{{ hackathon.url }}" target="_blank">Website</a></li>
-          <li>{{ ::hackathon.date | date: 'longDate' }}</li>
-        </ul>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-8">
         <nav role="nav">
           <ul class="list-inline hackathon-page-nav">
             <li ui-sref="hackathons.page({ id: hackathon._id })" ui-sref-active="active">{{ ::hackathon.participants.length }} Participants</li>
             <li ui-sref="hackathons.page.teams({ id: hackathon._id })" ui-sref-active="active"> {{ ::hackathon.teams.length }} Teams</li>
           </ul>
         </nav>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline">
+          <li ng-if="hackathon.url"><a ng-href="{{ hackathon.url }}" target="_blank">Website</a></li>
+          <li>{{ ::hackathon.date | date: 'longDate' }}</li>
+        </ul>
       </div>
     </div>
   </div>
