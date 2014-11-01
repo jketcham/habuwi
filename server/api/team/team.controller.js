@@ -54,6 +54,42 @@ exports.destroy = function(req, res) {
   });
 };
 
+// Get team's Participants
+exports.getParticipants = function(req, res) {
+  Team.findById(req.params.id)
+    .populate('participants')
+    .exec(function(err, team) {
+      if (err) return next(err);
+      if (!team) return res.send(404);
+      return res.json(user.participants);
+    });
+}
+
+// Add participant
+exports.addParticipant = function(req, res) {
+  Hackathon.findById(req.params.participant_id, function(err, participant) {
+    if (err) return handleError(res, err);
+
+    Team.findByIdAndUpdate(req.params.id, {$push: {participants: participant}}, funciton (err, model) {
+       if (err) {return handleError(res,err);}
+      if (!team) return res.send(404);
+      return res.send(200);
+    });
+}
+// Removing participant
+
+exports.removeParticipant = function(req,res) {
+ Hackathon.findById(req.params.participant_id, function(err, participant) {
+    if (err) return handleError(res, err);
+
+    Team.findByIdAndUpdate(req.params.id, {$pull: {participants: participant}}, funciton (err, model) {
+       if (err) {return handleError(res,err);}
+      if (!team) return res.send(404);
+      return res.send(200);
+    });
+}
+}
+
 function handleError(res, err) {
   return res.send(500, err);
 }
