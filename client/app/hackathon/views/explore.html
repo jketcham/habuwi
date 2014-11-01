@@ -1,0 +1,30 @@
+<div ng-include="'/components/navbar/navbar.html'"></div>
+
+<div ui-view>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <header class="text-center">
+          <h3 class="page-header">Browse for hackathons</h3>
+          <form role="form">
+            <input type="text" class="form-control" ng-model="search" placeholder="Search hackathons">
+          </form>
+        </header>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="list-unstyled list-hackathons">
+          <li class="hackathon-item" ng-repeat="hackathon in hackathons">
+            <h3><a ui-sref="hackathons.page({ id: hackathon._id })">{{::hackathon.name}}</a></h3>
+            <ul class="list-inline">
+              <li><a ui-sref="hackathons.page.participants({ id: hackathon._id })">{{::hackathon.participants.length}} participants</a></li>
+              <li><a ui-sref="hackathons.page.teams({ id: hackathon._id })">{{::hackathon.teams.length}} teams</a></li>
+              <li>{{::hackathon.date | date: 'longDate'}}</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

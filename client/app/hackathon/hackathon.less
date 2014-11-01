@@ -1,0 +1,33 @@
+// Hackacthon page
+
+.hackathon-header {
+  border-bottom: 1px solid #ccc;
+  .title {
+    margin-top: 0;
+  }
+}
+
+.hackathon-page-nav {
+  margin: 0;
+  li {
+    padding: 10px;
+    margin: 0;
+    background-color: #eee;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    cursor: pointer;
+    &:first-child {
+      border-top-left-radius: 3px;
+    }
+    &:last-child {
+      border-top-right-radius: 3px;
+      border-left: none;
+      margin-left: -5px;
+    }
+    &.active {
+      background: #ddd;
+      font-weight: bold;
+    }
+  }
+}
