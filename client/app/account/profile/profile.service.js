@@ -8,6 +8,9 @@ angular.module('habuwiApp')
 		},
 		getUser: function(id){
 			return Restangular.one('users', id).get();
+		},
+		getTeamForHackathon: function(id,participant) {
+			return Restangular.one('hackathons', id).one('participants', participant).one('team').get();
 		}
 	};
 }]);
