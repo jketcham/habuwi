@@ -67,27 +67,44 @@ exports.getParticipants = function(req, res) {
 
 // Add participant
 exports.addParticipant = function(req, res) {
-  Hackathon.findById(req.params.participant_id, function(err, participant) {
+  Hackathon.findById(req.params.id, 'participants', function(err, hackathon) {
     if (err) return handleError(res, err);
-
-    Team.findByIdAndUpdate(req.params.id, {$push: {participants: participant}}, funciton (err, model) {
+    var participant = hackathon.participants.id(req.body.participant._id);
+    if(!participant) { return res.send(404); }
+    Team.findByIdAndUpdate(req.params.id, {$push: {participants: participant}}, function (err, team) {
        if (err) {return handleError(res,err);}
       if (!team) return res.send(404);
-      return res.send(200);
+      return res.json(201, team.participants);
     });
 }
 // Removing participant
-
 exports.removeParticipant = function(req,res) {
- Hackathon.findById(req.params.participant_id, function(err, participant) {
+  Hackathon.findById(req.params.id, 'participants', function(err, hackathon) {
     if (err) return handleError(res, err);
-
-    Team.findByIdAndUpdate(req.params.id, {$pull: {participants: participant}}, funciton (err, model) {
+    var participant = hackathon.participants.id(req.body.participant._id);
+    Team.findByIdAndUpdate(req.params.id, {$pull: {participants: participant}}, function (err, team) {
        if (err) {return handleError(res,err);}
       if (!team) return res.send(404);
       return res.send(200);
     });
+  }
 }
+
+exports.addSkill = function(req,res) {
+  Team.findByIdAndUpdate(req.params.id, {$push: {skills: {req.body}}}, function (err, team) {
+    if (err) return handleError(res,err);
+    if (!team) return res.send(404);
+    return res.send(200);
+  });
+}
+
+
+exports.removeSkill = function(req,res) {
+  Team.findByIdAndUpdate(req.params.id, {$pull: {skills: {req.body}}}, function (err, team) {
+    if (err) return handleError(res,err);
+    if (!team) return res.send(404);
+    return res.send(200);
+  });
 }
 
 function handleError(res, err) {
