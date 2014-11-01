@@ -48,6 +48,36 @@ exports.show = function (req, res, next) {
 };
 
 /**
+ * Get user's teams
+ */
+exports.getTeams = function(req, res) {
+  User.findById(req.params.id)
+    .populate('teams')
+    .exec(function(err, user) {
+      if (err) return next(err);
+      if (!user) return res.send(404);
+      return res.json(user.teams);
+    });
+};
+
+/**
+ * Update user's profile information
+ */
+exports.updateProfile = function(req, res) {
+  User.findById(req.params.id, function (err, user) {
+    if (err) { return handleError(res, err); }
+    if(!user) { return res.send(404); }
+    var updated = _.merge(user, req.body);
+    updated.save(function (err) {
+      if (err) { return handleError(res, err); }
+      return res.json(200, user);
+    });
+  });
+};
+
+
+
+/**
  * Deletes a user
  * restriction: 'admin'
  */

@@ -11,7 +11,11 @@ router.get('/', auth.hasRole('admin'), controller.index);
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
-router.get('/:id', auth.isAuthenticated(), controller.show);
+router.get('/:id', controller.show);
+router.put('/:id', auth.isAuthenticated(), controller.updateProfile);
 router.post('/', controller.create);
+
+// ## Routes
+router.get('/:id/teams', controller.getTeams);
 
 module.exports = router;
