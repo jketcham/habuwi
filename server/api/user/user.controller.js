@@ -1,6 +1,7 @@
 'use strict';
 
 var User = require('./user.model');
+var Hackathon = require('../hackathon/hackathon.model');
 var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
@@ -75,7 +76,23 @@ exports.updateProfile = function(req, res) {
   });
 };
 
+/**
+ * Check if user is in hackathon; return participant object if so
+ */
+exports.isParticipant = function(req, res) {
+  User.findById(req.params.id, function(err, user) {
+    if (err) { return handleError(res, err); }
+    if(!user) { return res.send(404); }
+    _.find(user.hackathons, function(hackathon) {
+      if(hackathon.hackathon.id(req.params.hackathon_id)) {
+        Hackathon.populate(hackathon.participant, function(err, hackathon) {
 
+        });
+        return res.json(200);
+      }
+    })
+  });
+};
 
 /**
  * Deletes a user

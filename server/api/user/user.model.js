@@ -7,7 +7,19 @@ var authTypes = ['github', 'twitter', 'facebook', 'google'];
 
 var UserSchema = new Schema({
   name: String,
+  bio: String,
   email: { type: String, lowercase: true },
+  phone: String,
+  skills: [{
+    skill: String,
+    strength: { type: Number, min: 1, max: 5 }
+  }],
+  school: String,
+  hackathons: [{
+    hackathon: { type: Schema.Types.ObjectId, ref: 'Hackathon' },
+    team: { type: Schema.Types.ObjectId, ref: 'Team' },
+    participant: { type: Schema.Types.ObjectId }
+  }],
   role: {
     type: String,
     default: 'user'

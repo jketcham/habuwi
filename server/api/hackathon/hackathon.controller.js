@@ -9,7 +9,7 @@ var User = require('../user/user.model');
 
 // Get list of hackathons
 exports.index = function(req, res) {
-  Hackathon.find(function (err, hackathons) {
+  Hackathon.find({}, '-participants -teams', function (err, hackathons) {
     if(err) { return handleError(res, err); }
     return res.json(200, hackathons);
   });
@@ -76,18 +76,56 @@ exports.getParticipants = function(req, res) {
   Hackathon.findById(req.params.id, 'participants')
     .exec(function(err, hackathon) {
       console.log(hackathon);
-      // handle errors
-      async.each(hackathon.participants, function(participant, callback) {
+      if(err) { return handleError(res, err); }
+      var participants = [];
+      _.forEach(hackathon.participants, function(participant) {
         console.log(participant);
-        User.populate(participant, [{ path: 'user' }], function(err, user) {
-          if (err) { return handleError(res, err); }
-
-          callback();
+        participant.populate('user team', function(err, participant) {
+          if(err) { return handleError(res, err); }
+          participants.push(participant);
         });
-      }, function(err) {
-        res.json(200, hackathon.participants);
+        console.log(participants);
+        return res.json(200, participants);
       });
     });
+};
+
+// Get a single participant
+exports.getParticipant = function(req, res) {
+  Hackathon.findById(req.params.id, function(err, hackathon) {
+    if(err) { return handleError(res, err); }
+    if(!hackathon) { return res.send(404); }
+    var participant = hackathon.participant.id(req.params.participant_id);
+    if(!participant) { return res.send(404); }
+    return res.json(200, participant);
+  });
+};
+
+// Check if a user is a participant in a hackathon
+exports.isParticipant = function(req, res) {
+  Hackathon.findById(req.params.id, function(err, hackathon) {
+    if(err) { return handleError(res, err); }
+    if(!hackathon) { return res.send(404); }
+    _.find(hackathon.participants, function(participant) {
+      if(participant.user.id(req.params.user_id)) {
+        return res.json(200, participant);
+      }
+    });
+  });
+};
+
+// Add interest to work with another participant
+exports.addInterest = function(req, res) {
+  Hackathon.findById(req.params.id, function(err, hackathon) {
+    if(err) { return handleError(res, err); }
+    if(!hackathon) { return res.send(404); }
+    var participant = hackathon.participants.id(req.params.participant_id);
+    if(!participant) { return res.send(404); }
+  });
+};
+
+exports.removeInterest = function(req, res) {
+
 };
 
 // Search paricipants

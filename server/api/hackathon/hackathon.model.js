@@ -16,6 +16,7 @@ var HackathonSchema = new Schema({
     interests: [{
       name: String
     }],
+    working_interests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     team: { type: Schema.Types.ObjectId, ref: 'Team' }
   }],
   created_on: { type: Date, default: Date.now }
