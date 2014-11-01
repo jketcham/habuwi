@@ -5,11 +5,11 @@
 
 'use strict';
 
-var Thing = require('../api/thing/thing.model');
+var Hackathon = require('../api/hackathon/hackathon.model');
 var User = require('../api/user/user.model');
 
-Thing.find({}).remove(function() {
-  Thing.create({
+Hackathon.find({}).remove(function() {
+  Hackathon.create({
     name : 'Development Tools',
     info : 'Integration with popular tools such as Bower, Grunt, Karma, Mocha, JSHint, Node Inspector, Livereload, Protractor, Jade, Stylus, Sass, CoffeeScript, and Less.'
   }, {
