@@ -7,7 +7,8 @@ angular.module('habuwiApp', [
   'btford.socket-io',
   'ui.router',
   'ui.bootstrap',
-  'restangular'
+  'restangular',
+  'ngTagsInput'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, RestangularProvider) {
     $urlRouterProvider
