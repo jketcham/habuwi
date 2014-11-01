@@ -7,7 +7,7 @@ angular.module('habuwiApp')
   });
 
   angular.module('habuwiApp')
-  .controller('ProfilePageCtrl', function ($scope, $http, socket, Users, user, hackathon) {
+  .controller('ProfilePageCtrl', function ($scope, $http, socket, Users, user) {
   		$scope.user = user;
-  		$scope.userTeam = Users.getTeamForHackathon(hackathon,user._id).$object; 
+  		// $scope.userTeam = Users.getTeamForHackathon(hackathon,user._id).$object; 
   });
