@@ -1,0 +1,23 @@
+<div ng-include="'/components/navbar/navbar.html'"></div>
+
+<div ui-view>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <header class="text-center">
+          <h3 class="page-header">Browse for Users</h3>
+        </header>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="list-unstyled list-users">
+          <li class="users-item" ng-repeat="user in users">
+            <h3><a ui-sref="people.profile({ id: user._id })">{{::user.name}}</a></h3>   
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
