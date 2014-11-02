@@ -1,0 +1,11 @@
+<div ui-view>
+  <div class="row">
+    <div class="col-md-12">
+      <ul class="list-unstyled list-participants">
+        <li class="participant" ng-repeat="team in hackathon.teams">
+          <div hackathon-team team="team" hackathon="hackathon"></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

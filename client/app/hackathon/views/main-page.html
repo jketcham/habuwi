@@ -1,28 +1,32 @@
 <header class="hackathon-header">
   <div class="container">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-7">
         <h1 class="title">{{ ::hackathon.name }}</h1>
         <ul class="list-inline list-hackathon-header">
           <li><span class="verified" ng-show="hackathon.verified">Verified</span></li>
           <li><div button-hackathon-participate user="currentUser" hackathon="hackathon"></div></li>
         </ul>
+        <ul class="list-inline">
+          <li ng-if="hackathon.url"><a ng-href="{{ hackathon.url }}" target="_blank">Website</a></li>
+          <li class="hackathon-date">{{ ::hackathon.date | date: 'longDate' }}</li>
+        </ul>
         <p>{{ ::hackathon.info }}</p>
       </div>
-      <div class="col-md-4 col-md-offset-2">
+      <div class="col-md-4 col-md-offset-1">
         <div class="header-team">
           <h5>Your team:</h5>
-          <div ng-show="currentParticipant.team !== undefined">
-            <a ui-sref="hackathons.page.team({ id: hackathon._id, team_id: currentParticipant.team._id })">{{ ::currentParticipant.team.name }}</a>
+          <div ng-show="currentUser.hackathon.team !== undefined">
+            <a ui-sref="hackathons.page.teams.profile({ id: hackathon._id, team_id: currentUser.hackathon.team._id })">{{ ::currentUser.hackathon.team.name }}</a>
             <ul class="list-inline">
-              <li>{{ ::currentParticipant.team.members.length }} members</li>
+              <li>{{ ::currentUser.hackathon.team.members.length }} members</li>
             </ul>
           </div>
-          <div ng-show="currentParticipant.team == undefined">
-            <p>Not on a team yet</p>
-          </div>
-          <div ng-show="!isLogged() && !currentParticipant">
-            <p>You need to log in</p>
+          <div ng-show="isLoggedIn && currentUser.hackathon.team == undefined">
+            <ul class="list-inline list-header-team-actions">
+              <li><button class="btn btn-primary" ui-sref="hackathons.page.teams.create({ id: hackathon._id })">Create team</button></li>
+              <li>or join a team</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -31,24 +35,30 @@
       <div class="col-md-8">
         <nav role="nav">
           <ul class="list-inline hackathon-page-nav">
-            <li ui-sref="hackathons.page({ id: hackathon._id })" ui-sref-active="active">{{ ::hackathon.participants.length }} Participants</li>
-            <li ui-sref="hackathons.page.teams({ id: hackathon._id })" ui-sref-active="active"> {{ ::hackathon.teams.length }} Teams</li>
+            <li ui-sref="hackathons.page({ id: hackathon._id })" ui-sref-active>{{ hackathon.participants.length }} Participants</li>
+            <li ui-sref="hackathons.page.teams({ id: hackathon._id })" ui-sref-active="active"> {{ hackathon.teams.length }} Teams</li>
+            <li ui-sref="hackathons.page.notifications({ id: hackathon._id })" ui-sref-active="active" ng-if="currentUser.isParticipant">
+              {{ currentUser.hackathon.notifications.length }} Notifications
+            </li>
           </ul>
         </nav>
       </div>
       <div class="col-md-4">
-        <ul class="list-inline">
-          <li ng-if="hackathon.url"><a ng-href="{{ hackathon.url }}" target="_blank">Website</a></li>
-          <li>{{ ::hackathon.date | date: 'longDate' }}</li>
-        </ul>
+
       </div>
     </div>
   </div>
 </header>
-<div class="row">
-  <div class="col-md-12">
-    <div class="content" ui-view>
-
+<div class="container" ui-view>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="content">
+        <ul class="list-unstyled list-participants">
+          <li class="participant" ng-repeat="participant in hackathon.participants">
+            <div hackathon-participant user="currentUser" participant="participant" hackathon="hackathon"></div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

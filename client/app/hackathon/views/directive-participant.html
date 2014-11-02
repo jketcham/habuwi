@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-md-6">
+    <h3 class="participant-name"><a ui-sref="hackathons.page.participants.profile({ id: hackathon._id, user_id: participant._id })">{{ ::participant.name }}</a></h3>
+    <ul class="list-inline participant-prospect-container">
+      <li><div class="participant-prospect" button-prospect user="user" participant="participant"></div></li>
+    </ul>
+    <ul class="list-inline">
+      <li class="participant-school">{{ ::participant.school }}</li>
+    </ul>
+    <p class="participant-bio">{{ ::participant.bio }}</p>
+  </div>
+  <div class="col-md-4 col-md-offset-2">
+    <div class="participant-team-container">
+      <strong>Team:</strong>
+      <div class="participant-team">
+        <div class="team-tab" ng-show="participant.team" ui-sref="hackathons.page.teams.profile({ id: hackathon._id, team_id: participant.team._id })">
+          <a ui-sref="hackathons.page.teams.profile({ id: hackathon._id, team_id: participant.team._id })">{{ ::participant.team.name }}</a>
+          <ul class="list-inline">
+            <li>{{ ::participant.team.members.length }} members</li>
+          </ul>
+        </div>
+        <div class="team-tab" ng-show="!participant.team">
+          <em>Not in a team yet</em>
+        </div>
+      </div>
+    </div>
+    <div class="participant-skills-container">
+      <strong>Skills:</strong>
+      <div class="participant-skills">
+        <ul class="list-inline list-skills">
+          <li class="skill label label-default" ng-repeat="skill in participant.skills">{{ ::skill }}</li>
+          <li ng-show="participant.skills.length == 0"><em>No skills listed</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

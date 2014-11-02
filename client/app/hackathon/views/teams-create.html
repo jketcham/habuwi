@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col-md-6">
+    <h3>Create a team</h3>
+    <form role="form" ng-submit="createTeam(form)">
+      <div class="form-group">
+        <label for="name">Team/project name</label>
+        <input type="text" ng-model="form.name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="info">Description</label>
+        <p>What do you plan to build? Who might be similarly interested in the project?</p>
+        <textarea ng-model="form.info" class="form-control"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="interests">Interests</label>
+        <p>Add some <span class="label label-default">Tags</span> related to your project to help people find it; e.g. nodejs, iOS, etc</p>
+        <tags-input ng-model="form.interests"></tags-input>
+      </div>
+      <button class="btn btn-success">Create team</button>
+    </form>
+  </div>
+</div>

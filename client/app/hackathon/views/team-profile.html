@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-md-8">
+    <header>
+      <h2>{{ ::team.name }}</h2>
+      <ul class="list-inline">
+        <li>{{ ::team.created_on | date: 'longDate' }}</li>
+        <li></li>
+        <li></li>
+      </ul>
+      <p>{{ ::team.info }}</p>
+    </header>
+  </div>
+  <div class="col-md-4">
+    <div class="team-actions-container">
+
+    </div>
+    <div class="team-members-container">
+      <ul class="list-unstyled list-team-members">
+        <li class="team-member" ng-repeat="member in team.members">
+          <a ui-sref="hackathons.page.participants.profile({ id: hackathon._id, participant_id: member._id })">{{ ::member.name }}</a>
+          <ul class="list-inline">
+            <li class="label label-default" ng-repeat="skill in member.skills">{{ ::skill }}</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
