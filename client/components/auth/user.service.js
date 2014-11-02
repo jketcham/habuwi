@@ -9,7 +9,7 @@ angular.module('habuwiApp')
       changePassword: {
         method: 'PUT',
         params: {
-          controller:'password'
+          controller: 'password'
         }
       },
       get: {
