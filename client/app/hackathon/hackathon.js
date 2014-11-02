@@ -15,6 +15,9 @@ angular.module('habuwiApp')
         resolve: {
           hackathon: function($stateParams, Hackathons) {
             return Hackathons.getHackathon($stateParams.id);
+          },
+          user: function($stateParams, Auth) {
+            return Auth.getCurrentUser();
           }
         }
       })
@@ -27,16 +30,31 @@ angular.module('habuwiApp')
         url: '/teams',
         templateUrl: 'app/hackathon/views/teams.html'
       })
+      .state('hackathons.page.teams.create', {
+        url: '/create',
+        templateUrl: 'app/hackathon/views/teams-create.html',
+        authenticate: true
+      })
       .state('hackathons.page.teams.profile', {
         url: '/:team_id',
-        templateUrl: 'app/hackathon/views/team-profile.html'
+        templateUrl: 'app/hackathon/views/team-profile.html',
+        controller: 'HackathonTeamProfileCtrl',
+        resolve: {
+          team: function($stateParams, Hackathons) {
+            return Hackathons.getTeam($stateParams.id, $stateParams.team_id);
+          }
+        }
+      })
+      .state('hackathons.page.notifications', {
+        url: '/notifications',
+        templateUrl: 'app/hackathon/views/notifications.html'
       })
       .state('hackathons.page.participants', {
         url: '/participants',
         templateUrl: 'app/hackathon/views/participants.html'
       })
       .state('hackathons.page.participants.profile', {
-        url: '/:participant_id',
+        url: '/:user_id',
         templateUrl: 'app/hackathon/views/participant-profile.html'
       });
   });
