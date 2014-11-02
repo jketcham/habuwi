@@ -17,9 +17,9 @@ router.delete('/:id', controller.destroy);
 router.post('/:id/participants', auth.isAuthenticated(), controller.addParticipant);
 router.delete('/:id/participants/:participant_id', auth.isAuthenticated(), controller.removeParticipant);
 router.get('/:id/participants', controller.getParticipants);
-router.get('/:id/participants/:participant_id', controller.getParticipant);
-router.post('/:id/participants/:participant_id', controller.addInterest);
-router.get('/:id/users/:user_id', controller.isParticipant);
+router.get('/:id/participants/:user_id', auth.isAuthenticated(), controller.isParticipant);
+router.post('/:id/participants/:participant_id/prospects', auth.isAuthenticated(), controller.addProspect);
+router.delete('/:id/participants/:participant_id/prospects/:user_id', auth.isAuthenticated(), controller.removeProspect);
 
 // ## Team routes
 router.post('/:id/teams', auth.isAuthenticated(), controller.addTeam);
