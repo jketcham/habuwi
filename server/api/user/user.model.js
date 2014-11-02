@@ -10,15 +10,15 @@ var UserSchema = new Schema({
   bio: String,
   email: { type: String, lowercase: true },
   phone: String,
-  skills: [{
-    skill: String,
-    strength: { type: Number, min: 1, max: 5 }
-  }],
+  skills: [ String ],
   school: String,
   hackathons: [{
     hackathon: { type: Schema.Types.ObjectId, ref: 'Hackathon' },
-    team: { type: Schema.Types.ObjectId, ref: 'Team' },
-    participant: { type: Schema.Types.ObjectId }
+    info: String,
+    interests: [{ text: String }],
+    prospects: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    team: { type: Schema.Types.ObjectId, ref: 'Team' }
   }],
   role: {
     type: String,

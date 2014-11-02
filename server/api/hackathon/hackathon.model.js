@@ -10,15 +10,7 @@ var HackathonSchema = new Schema({
   date: Date,
   header_image_key: String,
   teams: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
-  participants: [{
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
-    info: String,
-    interests: [{
-      name: String
-    }],
-    working_interests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    team: { type: Schema.Types.ObjectId, ref: 'Team' }
-  }],
+  participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   created_on: { type: Date, default: Date.now }
 });
 

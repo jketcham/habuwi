@@ -3,16 +3,13 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var teamTypes = ['Web','Mobile','Hardware'];
-
-
 var TeamSchema = new Schema({
   name: String,
-  host: {type:Schema.Types.ObjectId, ref:'Participant'},
-  description: String,
+  host: {type:Schema.Types.ObjectId, ref:'User'},
+  info: String,
   hackathon: {type:Schema.Types.ObjectId, ref: 'Hackathon'},
-  participants: [{type:Schema.Types.ObjectId, ref: 'Participant'}],
-  skills: [String],
+  members: [{type:Schema.Types.ObjectId, ref: 'User'}],
+  interests: [ String ],
   maxSize: Number,
   full: Boolean,
   created_on: {type: Date, default: Date.now},
