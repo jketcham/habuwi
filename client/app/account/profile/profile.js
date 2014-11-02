@@ -5,12 +5,12 @@ angular.module('habuwiApp')
     $stateProvider
       .state('people', {
         url: '/people',
-        templateUrl: 'app/profiles/views/explore.html',
+        templateUrl: 'app/account/profile/views/explore.html',
         controller: 'PeopleExploreCtrl'
       })
       .state('people.profile', {
         url: '/:id',
-        templateUrl: 'app/profiles/views/profile.html',
+        templateUrl: 'app/account/profile/views/profile.html',
         controller: 'ProfilePageCtrl',
         resolve: {
           user: function($stateParams, Users) {
