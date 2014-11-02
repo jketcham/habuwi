@@ -43,30 +43,30 @@ exports.create = function(req, res) {
 
 // Add participant to hackathon
 exports.addParticipant = function(req, res) {
-  req.body.user = req.user._id;
-  Hackathon.findByIdAndUpdate(req.params.id, { $push: { participants: req.body } },
+  Hackathon.findByIdAndUpdate(req.params.id, { $push: { participants: req.user._id } },
     function(err, hackathon) {
       if(err) { return handleError(res, err); }
       if(!hackathon) { return res.send(404); }
-      User.findByIdAndUpdate(req.user._id, { $push: { hackathons: hackathon._id } },
+      User.findByIdAndUpdate(req.user._id, { $push: { hackathons: { hackathon: hackathon._id, interests: req.body.interests, info: req.body.info } } },
         function(err, user) {
           if(err) { return handleError(res, err); }
           if(!user) { return res.send(404); }
-          return res.json(201, hackathon.participants);
+          return res.json(200, user.hackathons);
         });
     });
 };
 
 // Remove participant from hackathon
 exports.removeParticipant = function(req, res) {
-  Hackathon.findByIdAndUpdate(req.params.id, { $pull: { participants: req.params.participant_id } },
+  Hackathon.findByIdAndUpdate(req.params.id, { $pull: { participants: req.user._id } },
     function(err, hackathon) {
       if(err) { return handleError(res, err); }
-      User.findByIdAndUpdate(req.user._id, { $pull: { hackathons: hackathon._id } },
+      if(!hackathon) { return res.send(404); }
+      User.findByIdAndUpdate(req.user._id, { $pull: { hackathons: { hackathon: hackathon._id } } },
         function(err, user) {
           if(err) { return handleError(res, err); }
           if(!user) { return res.send(404); }
-          return res.send(200);
+          return res.json(200, hackathon.participants);
         });
     });
 };
@@ -74,57 +74,54 @@ exports.removeParticipant = function(req, res) {
 // Get participants
 exports.getParticipants = function(req, res) {
   Hackathon.findById(req.params.id, 'participants')
+    .populate('participants', '-hashedPassword -salt')
     .exec(function(err, hackathon) {
-      console.log(hackathon);
       if(err) { return handleError(res, err); }
-      var participants = [];
-      _.forEach(hackathon.participants, function(participant) {
-        console.log(participant);
-        participant.populate('user team', function(err, participant) {
-          if(err) { return handleError(res, err); }
-          participants.push(participant);
-        });
-        console.log(participants);
-        return res.json(200, participants);
-      });
+      if(!hackathon) { return res.send(404); }
+      return res.json(200, hackathon.participants);
     });
 };
 
 // Get a single participant
-exports.getParticipant = function(req, res) {
-  Hackathon.findById(req.params.id, function(err, hackathon) {
-    if(err) { return handleError(res, err); }
-    if(!hackathon) { return res.send(404); }
-    var participant = hackathon.participant.id(req.params.participant_id);
-    if(!participant) { return res.send(404); }
-    return res.json(200, participant);
-  });
-};
-
-// Check if a user is a participant in a hackathon
 exports.isParticipant = function(req, res) {
-  Hackathon.findById(req.params.id, function(err, hackathon) {
+  User.findById(req.params.user_id, function(err, user) {
     if(err) { return handleError(res, err); }
-    if(!hackathon) { return res.send(404); }
-    _.find(hackathon.participants, function(participant) {
-      if(participant.user.id(req.params.user_id)) {
-        return res.json(200, participant);
+    if(!user) { return res.send(404); }
+    console.log(user.hackathons.length);
+    if(user.hackathons.length == 0) { return res.json({ "error": { "text": "User not a participant" } }); }
+    _.find(user.hackathons, function(hackathon) {
+      console.log(hackathon);
+      if(hackathon._id == req.params.id) {
+        return res.json(200, user);
+      } else {
+        return res.json({ "error": { "text": "User not a participant" } });
       }
     });
   });
 };
 
 // Add interest to work with another participant
-exports.addInterest = function(req, res) {
-  Hackathon.findById(req.params.id, function(err, hackathon) {
+exports.addProspect = function(req, res) {
+  User.findById(req.params.id, function(err, user) {
     if(err) { return handleError(res, err); }
+    if(!user) { return res.send(404); }
+    var hackathon = user.hackathons.id(req.params.id);
     if(!hackathon) { return res.send(404); }
-    var participant = hackathon.participants.id(req.params.participant_id);
-    if(!participant) { return res.send(404); }
+    console.log(hackathon);
+    hackathon.prospects.push( req.params.participant_id );
+    User.findById(req.params.participant_id, function(err, user) {
+      if(err) { return handleError(res, err); }
+      if(!user) { return res.send(404); }
+      var hackathon = user.hackathons.id(req.params.id);
+      if(!hackathon) { return res.send(404); }
+      console.log(hackathon);
+      hackathon.notifications.push( req.body._id );
+      return res.send(201);
+    });
   });
 };
 
-exports.removeInterest = function(req, res) {
+exports.removeProspect = function(req, res) {
 
 };
 
@@ -150,8 +147,34 @@ exports.searchParticipants = function(req, res) {
 // Add team to hackathon
 exports.addTeam = function(req, res) {
   Team.create(req.body, function(err, team) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, team);
+    if (err) { return handleError(res, err); }
+    async.parallel([
+      function(callback) {
+        Hackathon.findByIdAndUpdate(req.params.id, { $push: { teams: team._id } },
+          function(err, hackathon) {
+            if (!hackathon) { return res.send(404); }
+            callback(err, hackathon);
+          });
+      },
+      function(callback) {
+        User.findById(req.user._id, 'hackathons', function(err, user) {
+          if (!user) { return res.send(404); }
+          // :'(
+          for(var i = 0; i <= user.hackathons.length; i++) {
+            if(user.hackathons[i]._id == req.body.user_hackathon) {
+              user.hackathons[i].team = team._id;
+              user.save(function(err, result) {
+                callback(err, result);
+              });
+              break;
+            }
+          }
+        });
+      }
+    ], function(err, results) {
+      if(err) { return handleError(res, err); }
+      return res.json(201, team);
+    });
   });
 };
 
@@ -172,9 +195,10 @@ exports.getTeams = function(req, res) {
   Hackathon.findById(req.params.id, 'teams')
     .populate('teams')
     .exec(function(err, hackathon) {
-      // handle errors
+      if (err) { return handleError(res, err); }
+      if (!hackathon) { return res.send(404); }
       return res.json(200, hackathon.teams);
-    })
+    });
 };
 
 // Search teams
@@ -187,7 +211,7 @@ exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
   Hackathon.findById(req.params.id, function (err, hackathon) {
     if (err) { return handleError(res, err); }
-    if(!hackathon) { return res.send(404); }
+    if (!hackathon) { return res.send(404); }
     var updated = _.merge(hackathon, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }

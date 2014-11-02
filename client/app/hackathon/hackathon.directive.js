@@ -71,7 +71,7 @@ angular.module('habuwiApp')
 }]);
 
 angular.module('habuwiApp')
-.directive('buttonHackathonParticipate', ['Hackathons', 'User', '$state', function(Hackathons, User, $state) {
+.directive('buttonHackathonParticipate', ['$state', 'Hackathons', 'User', 'Auth', function($state, Hackathons, User, Auth) {
   return {
     restrict: 'A',
     scope: {
@@ -86,6 +86,16 @@ angular.module('habuwiApp')
       scope.hackathon.btn.class = 'btn-default';
       scope.hackathon.btn.text = 'Participate';
       scope.hackathon.participating = false;
+
+      if(Auth.isLoggedIn()) {
+        user.hackathons.forEach(function(result) {
+          if(result.hackathon == hackathon._id) {
+            scope.hackathon.participating = true;
+            scope.hackathon.btn.class = 'btn-success';
+            scope.hackathon.btn.text = 'Participating';
+          }
+        });
+      }
 
       return element.bind({
         mouseenter: function() {
@@ -106,15 +116,120 @@ angular.module('habuwiApp')
         },
         click: function() {
           if(scope.hackathon.participating) {
-            Hackathons.removeParticipant(hackathon._id, user).then(function(res) {
+            Hackathons.removeParticipant(hackathon._id, user._id).then(function(res) {
               if(res && !res.error) {
-                scope.participating = false;
-                scope.hackathon.btn.class = 'btn-success';
+                scope.hackathon.participating = false;
+                scope.hackathon.btn.class = 'btn-default';
                 scope.hackathon.btn.text = 'Participate';
+                scope.hackathon.participants.splice(scope.hackathon.participants.indexOf(user), 1);
               }
             });
           } else {
             $state.go('hackathons.page.join', { id: hackathon._id });
+          }
+        }
+      });
+    }
+  }
+}]);
+
+angular.module('habuwiApp')
+.directive('hackathonParticipant', ['$state', 'Hackathons', 'User', 'Auth', function($state, Hackathons, User, Auth) {
+  return {
+    restrict: 'A',
+    scope: {
+      user: '=',
+      participant: '=',
+      hackathon: '='
+    },
+    templateUrl: 'app/hackathon/views/directive-participant.html',
+    link: function(scope, element, attr) {
+      var user = scope.user,
+          participant = scope.participant,
+          hackathon = scope.hackathon;
+    }
+  }
+}]);
+
+angular.module('habuwiApp')
+.directive('hackathonTeam', ['$state', 'Hackathons', 'User', 'Auth', function($state, Hackathons, User, Auth) {
+  return {
+    restrict: 'A',
+    scope: {
+      team: '=',
+      hackathon: '='
+    },
+    templateUrl: 'app/hackathon/views/directive-team.html',
+    link: function(scope, element, attr) {
+      var team = scope.team,
+          hackathon = scope.hackathon;
+    }
+  }
+}]);
+
+angular.module('habuwiApp')
+.directive('buttonProspect', ['$state', 'Hackathons', 'User', 'Auth', function($state, Hackathons, User, Auth) {
+  if(!Auth.isLoggedIn()) { return; }
+  return {
+    restrict: 'A',
+    scope: {
+      user: '=',
+      participant: '=',
+      hackathon: '='
+    },
+    template: '<button class="btn btn-prospect {{user.btn.class}}" role="button">{{user.btn.text}}</button>',
+    link: function(scope, element, attr) {
+      var user = scope.user,
+          participant = scope.participant,
+          hackathon = scope.user.hackathon;
+      scope.user.btn = {};
+      scope.user.btn.class = 'btn-default';
+      scope.user.btn.text = 'Prospect';
+      scope.user.prospected = false;
+
+      // Check if already shown interest
+      user.hackathon.prospects.forEach(function(result) {
+        if(result == participant._id) {
+          console.log('match ' + result);
+          scope.user.prospected = true;
+          scope.user.btn.text = 'Prospected';
+        }
+      });
+
+      return element.bind({
+        mouseenter: function() {
+          if(scope.user.prospected) {
+            scope.$apply(function() {
+              scope.user.btn.class = 'btn-warning';
+              scope.user.btn.text = 'Whoops';
+            });
+          }
+        },
+        mouseleave: function() {
+          if(scope.user.prospected) {
+            scope.$apply(function() {
+              scope.user.btn.class = 'btn-disabled';
+              scope.user.btn.text = 'Prospected';
+            });
+          }
+        },
+        click: function() {
+          if(!scope.user.prospected) {
+            Hackathons.addProspect(hackathon._id, participant._id, user).then(function(res) {
+              if(res && !res.error) {
+                scope.user.prospected = false;
+                scope.user.btn.class = 'btn-default';
+                scope.user.btn.text = 'Prospect';
+              }
+            });
+          } else {
+            Hackathons.removeProspect(hackathon._id, participant._id, user).then(function(res) {
+              if(res && !res.error) {
+                scope.user.prospected = true;
+                scope.user.btn.class = 'btn-default';
+                scope.user.btn.text = 'Prospected';
+              }
+            });
           }
         }
       });
